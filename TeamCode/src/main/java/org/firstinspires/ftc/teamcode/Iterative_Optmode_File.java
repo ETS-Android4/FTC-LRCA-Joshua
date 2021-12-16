@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -50,8 +51,8 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
-@Disabled
+@TeleOp(name="Iterative_Opmode_File", group="Iterative Opmode")
+//@Disabled
 public class Iterative_Optmode_File extends OpMode
 {
     // Declare OpMode members.
@@ -79,7 +80,11 @@ public class Iterative_Optmode_File extends OpMode
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDriveBack.setDirection(DcMotor.Direction.FORWARD);
+        leftDriveFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightDriveBack.setDirection(DcMotor.Direction.REVERSE);
+        rightDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftDriveBack
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
