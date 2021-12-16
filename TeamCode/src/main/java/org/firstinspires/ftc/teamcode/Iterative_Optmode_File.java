@@ -94,10 +94,10 @@ public class Iterative_Optmode_File extends OpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDriveBack.setDirection(DcMotor.Direction.FORWARD);
-        leftDriveFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightDriveBack.setDirection(DcMotor.Direction.REVERSE);
-        rightDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftDriveBack.setDirection(DcMotor.Direction.REVERSE);
+        leftDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightDriveBack.setDirection(DcMotor.Direction.FORWARD);
+        rightDriveFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         // Tell the driver that initialization is complete.
