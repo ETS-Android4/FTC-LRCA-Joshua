@@ -62,6 +62,7 @@ public class Iterative_Optmode_File extends OpMode {
     private DcMotor rightDriveBack = null;
     private DcMotor rightDriveFront = null;
 
+    //Sets same power level to all wheels. DOES NOT CHANGE DIRECTION
     private void moveAllWheels(double power) {
         rightDriveFront.setPower(power);
         leftDriveFront.setPower(power);
@@ -69,13 +70,33 @@ public class Iterative_Optmode_File extends OpMode {
         leftDriveBack.setPower(power);
     }
 
-    private void moveRightDiagnal(double power)
+    //PROTOTYPE: should move robot to the right horizontal at given power.
+    private void moveRightHorizontal(double power)
     {
         leftDriveBack.setDirection(DcMotor.Direction.FORWARD);
         leftDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightDriveBack.setDirection(DcMotor.Direction.FORWARD);
         rightDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
         moveAllWheels(power);
+    }
+
+    //PROTOTYPE: should move robot to the left horizontal at given power.
+    private void moveLeftHorizontal(double power)
+    {
+        leftDriveBack.setDirection(DcMotor.Direction.REVERSE);
+        leftDriveFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightDriveBack.setDirection(DcMotor.Direction.REVERSE);
+        rightDriveFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        moveAllWheels(power);
+    }
+
+    //Sets direction of wheels back to normal forward position.
+    private void setWheelsForward()
+    {
+        leftDriveBack.setDirection(DcMotor.Direction.REVERSE);
+        leftDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightDriveBack.setDirection(DcMotor.Direction.FORWARD);
+        rightDriveFront.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     @Override
@@ -109,6 +130,21 @@ public class Iterative_Optmode_File extends OpMode {
         rightDriveBack.setDirection(DcMotor.Direction.FORWARD);
         rightDriveFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
+ /*This code should:
+         1. make robot move forward at half speed
+         2. make robot move to the horizontal right at half speed
+         3. make robot move to the horizontal left at half speed
+            This should return robot to where it was before moving to the right.
+         4. make robot set wheel directions to normal forward position.
+         5. move robot backwards at half speed.
+            This should return robot to where it was at the beginning of the code.
+         6. make robot stop.
+         */
+        moveAllWheels(.5);
+        moveRightHorizontal(.5);
+        moveLeftHorizontal(.5);
+        setWheelsForward();
+        moveAllWheels(-.5);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -120,8 +156,9 @@ public class Iterative_Optmode_File extends OpMode {
     @Override
     public void init_loop()
     {
-        moveAllWheels(.5);
-        moveRightDiagnal(.5);
+       //stop all movement till driver hits PLAY.
+        moveAllWheels(0);
+
     }
 
 
