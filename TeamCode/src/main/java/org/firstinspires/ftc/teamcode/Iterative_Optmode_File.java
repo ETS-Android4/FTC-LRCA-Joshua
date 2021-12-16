@@ -53,8 +53,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Iterative_Opmode_File", group="Iterative Opmode")
 //@Disabled
-public class Iterative_Optmode_File extends OpMode
-{
+public class Iterative_Optmode_File extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDriveBack = null;
@@ -62,9 +61,13 @@ public class Iterative_Optmode_File extends OpMode
     private DcMotor rightDriveBack = null;
     private DcMotor rightDriveFront = null;
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+    private void moveAllWheels(double power) {
+        rightDriveFront.setPower(power);
+        leftDriveFront.setPower(power);
+        rightDriveBack.setPower(power);
+        leftDriveBack.setPower(power);
+    }
+
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
@@ -72,10 +75,22 @@ public class Iterative_Optmode_File extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDriveBack  = hardwareMap.get(DcMotor.class, "");
-        leftDriveFront = hardwareMap.get(DcMotor.class, "");
-        rightDriveBack = hardwareMap.get(DcMotor.class, "right_drive");
-        rightDriveFront = hardwareMap.get(DcMotor.class, "");
+        
+        //Name of wheels:
+
+        //Front -
+        //FRW (Front right wheel) port 0.
+        //FLW (Front Left wheel) port 1.
+
+        //Back -
+        //BRW (Back right wheel) port 2.
+        //BLW (Back left wheel) port 3.
+
+        rightDriveFront = hardwareMap.get(DcMotor.class, "FRW");
+        leftDriveFront = hardwareMap.get(DcMotor.class, "FLW");
+
+        rightDriveBack = hardwareMap.get(DcMotor.class, "BRW");
+        leftDriveBack = hardwareMap.get(DcMotor.class, "BLW");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -84,7 +99,6 @@ public class Iterative_Optmode_File extends OpMode
         rightDriveBack.setDirection(DcMotor.Direction.REVERSE);
         rightDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftDriveBack
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -94,12 +108,16 @@ public class Iterative_Optmode_File extends OpMode
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
     @Override
-    public void init_loop() {
+    public void init_loop()
+    {
+        moveAllWheels(.5);
     }
+
 
     /*
      * Code to run ONCE when the driver hits PLAY
      */
+
     @Override
     public void start() {
         runtime.reset();
@@ -142,7 +160,10 @@ public class Iterative_Optmode_File extends OpMode
      * Code to run ONCE after the driver hits STOP
      */
     @Override
-    public void stop() {
+    public void stop() 
+    {
+        moveAllWheels(0.0);
     }
+
 
 }
