@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -51,7 +52,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Iterative_Opmode_File", group="Iterative Opmode")
+@Autonomous(name="Iterative_Opmode_File", group="Iterative Opmode")
 //@Disabled
 public class Iterative_Optmode_File extends OpMode {
     // Declare OpMode members.
@@ -66,6 +67,15 @@ public class Iterative_Optmode_File extends OpMode {
         leftDriveFront.setPower(power);
         rightDriveBack.setPower(power);
         leftDriveBack.setPower(power);
+    }
+
+    private void moveRightDiagnal(double power)
+    {
+        leftDriveBack.setDirection(DcMotor.Direction.FORWARD);
+        leftDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightDriveBack.setDirection(DcMotor.Direction.FORWARD);
+        rightDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        moveAllWheels(power);
     }
 
     @Override
@@ -111,6 +121,7 @@ public class Iterative_Optmode_File extends OpMode {
     public void init_loop()
     {
         moveAllWheels(.5);
+        moveRightDiagnal(.5);
     }
 
 
