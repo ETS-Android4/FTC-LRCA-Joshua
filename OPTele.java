@@ -58,39 +58,47 @@ public class OPTele extends LinearOpMode {
     // Declare OpMode members.
     ElapsedTime runtime = new ElapsedTime();
 
-    DcMotor leftDriveBack;
-    DcMotor leftDriveFront;
-    DcMotor rightDriveBack;
-    DcMotor rightDriveFront;
-    DcMotor collectionMotor;
-    DcMotor carouselMotor;
-    DcMotor viperMotor;
+    //FRW (Front right wheel) port 0.
+    //FLW (Front Left wheel) port 1.
+    //BRW (Back right wheel) port 2.
+    //BLW (Back left wheel) port 3.
+    //COLLM (Collection Motor) port 0 expansion hub
+    //Viper-
+    //Carousel-
+    //Servo- servo-port 0 on expansion hub
 
-    double motSpeed;
+    //creates motors
+    private DcMotor leftDriveBack;
+    private DcMotor leftDriveFront;
+    private DcMotor rightDriveBack;
+    private DcMotor rightDriveFront;
+    private DcMotor collectionMotor;
+    private DcMotor carouselMotor;
+    private DcMotor viperMotor;
+
+    //speed for precision mode
+    private double motSpeed;
 
 
-    static final double INCREMENT   = 0.001;     // amount to slew servo each CYCLE_MS cycle
-    static final double MAX_POS     =  1.0;     // Maximum rotational position
-    static final double MIN_POS     =  0.0;     // Minimum rotational position
-    static final double START_POS = 0.5;
+    // amount of movement or slew to servo each cycle (Ms cycle)
+    private double increment   = 0.001;
+    // Maximum rotational position (if you want that)
+    private double maxPosition     =  1.0;
+    // Minimum rotational position (if you want that)
+    private double minPosition     =  0.0;
+    // Start at halfway position (or whatever you want)
+    private double startPosition = 0.5;
 
-    Servo   servoBasket;
-    double  position = START_POS; // Start at halfway position
+    private Servo servoBasket;
+
+    private double position;
 
 
     @Override
     public void runOpMode() {
 
-
-        telemetry.addData("Status", "Initialized");
-        //FRW (Front right wheel) port 0.
-        //FLW (Front Left wheel) port 1.
-        //BRW (Back right wheel) port 2.
-        //BLW (Back left wheel) port 3.
-        //COLLM (Collection Motor) port 0 expansion hub
-        telemetry.update();
-
-
+        //Maps all of the hardware to the software variable names. The green names in "" are what appear on the
+        //Driver hub config. settings. These must match exactly
         rightDriveFront = hardwareMap.get(DcMotor.class, "FRW");
         leftDriveFront = hardwareMap.get(DcMotor.class, "FLW");
         rightDriveBack = hardwareMap.get(DcMotor.class, "BRW");
@@ -103,6 +111,7 @@ public class OPTele extends LinearOpMode {
 
 
 
+        //Sets the directions of all DC Motors
         leftDriveBack.setDirection(DcMotor.Direction.REVERSE);
         leftDriveFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightDriveBack.setDirection(DcMotor.Direction.FORWARD);
@@ -111,14 +120,23 @@ public class OPTele extends LinearOpMode {
         carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         viperMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        //Tells Driver hub that init has completed
         telemetry.addData("Status", "Initialized");
 
+        //All code before this does not run until the play button is hit (not init)
         waitForStart();
         runtime.reset();
+
+        //sets the position of servo initially
+        servoBasket.setPosition(startPosition);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+
+            //All of this is complex trig. that solves for the movement of the mech. omni. wheels. Do not change. The only thing that
+            //I changed was the - sign infront of gamepad1.left_stick_y. I made it negative because joysticks always have the "up" direction
+            //as negative. Don't worry about this, and don't change it
             double r = Math.hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
             double robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
             double rightX = gamepad1.right_stick_x;
@@ -127,12 +145,23 @@ public class OPTele extends LinearOpMode {
             final double v3 = r * Math.sin(robotAngle) + rightX;
             final double v4 = r * Math.cos(robotAngle) - rightX;
 
+            //This is precision mode. I just go the output powers from the trig. above and divided it by
+            //the value of "motSpeed" which is determined if precision mode is on or off
             leftDriveFront.setPower(v1 / motSpeed);
             rightDriveFront.setPower(v2 / motSpeed);
             leftDriveBack.setPower(v3 / motSpeed);
             rightDriveBack.setPower(v4 / motSpeed);
 
+            //The if-statements for precision mode
+            if (gamepad1.right_bumper) {
+                motSpeed = 2.5;
+            } else {
+                motSpeed = 1;
+            }
 
+            //The if-statements for the viper slide. If the up dpad button is pressed, the slide goes up and dpad down is false (I made
+            //the other statement false so that the motors wouldn't jam or freak out if both are pressed at once). Vise versa for down. If no
+            // dpad button is pressed, it doesn't move
             if (gamepad1.dpad_up) {
                 viperMotor.setPower(1);
                 gamepad1.dpad_down = false;
@@ -144,50 +173,47 @@ public class OPTele extends LinearOpMode {
             }
 
 
-
-            if (gamepad1.right_bumper) {
-                motSpeed = 2.5;
-            } else {
-                motSpeed = 1;
-            }
-
-
+            //The collection spinny thingy. Pretty straight forward. If x, then spin. If not, don't.
             if (gamepad1.x) {
                 collectionMotor.setPower(1);
             } else {
                 collectionMotor.setPower(0);
             }
 
+
+            //The carousel spinner arm. The "ducky arm" if you will. The first statement is clockwise I believe, and the
+            //second is counterclockwise. I may be wrong, but Idk. ~0.5 is the sweet spot for the spinning power
             if (gamepad1.y) {
                 carouselMotor.setPower(0.5);
+            } else if (gamepad1.left_bumper) {
+                carouselMotor.setPower(-0.5);
             } else {
                 carouselMotor.setPower(0);
             }
 
+
+            //The servo controls. Press b, increase. Press a, decrease.
             if (gamepad1.b) {
                 // Keep stepping up until we hit the max value.
-                position = 0.5;
-                if (position >= MAX_POS ) {
-                    position = MAX_POS;
-                }
+               position += increment;
             }
             if (gamepad1.a) {
                 // Keep stepping down until we hit the min value.
-                position -= INCREMENT ;
-                if (position <= MIN_POS ) {
-                    position = MIN_POS;
-                }
+                position -= increment;
             }
 
-            if (gamepad1.left_bumper) {
-                carouselMotor.setPower(-0.5);
-            }
-
+            //Sets the servo's position
             servoBasket.setPosition(position);
 
-            // Show the elapsed game time and wheel power.
+
+            // Show the elapsed game time on Driver Hub.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)");
+
+            //tell DH what the servo's position is, and other things...
+            telemetry.addData("Servo Position", position);
+            telemetry.addData("The Truth", "dat bald head of Dr. Arnold is hot");
+
+            //Needs this statement at end to update the driver hub
             telemetry.update();
         }
     }
